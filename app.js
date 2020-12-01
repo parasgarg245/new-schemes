@@ -20,11 +20,19 @@ const yojnaSchema = mongoose.Schema({
   Title:String,
   Description:String,
   Image:String,
-  link:String
-    
+  link:String   
+
+});
+
+
+const blogSchema = mongoose.Schema({
+    Technology: String,
+    Use: String,
+    image: String,
 
 });
 const Yojna_info = mongoose.model("Yojna_info", yojnaSchema);
+const Blog_info = mongoose.model('Blog_info', blogSchema)
 
 // const yojna_info1 = new Yojna_info({
 //  Title: 'Pradhan Mantri Fasal Bima Yojana (PMFBY)',
@@ -40,6 +48,16 @@ const Yojna_info = mongoose.model("Yojna_info", yojnaSchema);
 app.use(express.static("public"));
 
 app.get('/', (req, res) => {
+    Blog_info.find((err, blog) => {
+        if (err)
+            console.log(err)
+        else
+            res.render('blog',{blog:blog})
+    })
+
+})
+
+app.get('/schemes', (req, res) => {
     Yojna_info.find((err, yojna) => {
         if (err)
             console.log(err)
