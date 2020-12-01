@@ -2,6 +2,16 @@ const express= require('express')
 const mongoose =require('mongoose')
 const ejs =require('ejs')
 const bodyParser = require("body-parser");
+const User = require('./models/user')
+const passport = require('passport')
+const LocalStrategy = require('passport-local')
+const indexRoute = require('./routes/index')
+
+
+mongoose.connect("mongodb+srv://admin-hospital:hospital123@cluster0.5mlfk.mongodb.net/Api?retryWrites=true&w=majority", {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+})
 
 
 const app = express()
@@ -9,12 +19,30 @@ app.set('view engine', 'ejs')
 app.use(bodyParser.urlencoded({
     extended: true
 }));
+app.use(express.static("public"));
 
 
-mongoose.connect("mongodb+srv://admin-hospital:hospital123@cluster0.5mlfk.mongodb.net/Api?retryWrites=true&w=majority", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
+app.use(require('express-session')({
+    secret: 'this is my secret',
+    resave: false,
+    saveUninitialized: false
+}))
+
+app.use(passport.initialize())
+app.use(passport.session())
+passport.use(new LocalStrategy(User.authenticate()))
+passport.serializeUser(User.serializeUser())
+passport.deserializeUser(User.deserializeUser())
+
+app.use((req, res, next) => {
+    res.locals.currentUser = req.user
+    next();
 })
+
+app.use(indexRoute)
+
+
+
 
 const yojnaSchema = mongoose.Schema({
   Title:String,
@@ -34,18 +62,10 @@ const blogSchema = mongoose.Schema({
 const Yojna_info = mongoose.model("Yojna_info", yojnaSchema);
 const Blog_info = mongoose.model('Blog_info', blogSchema)
 
-// const yojna_info1 = new Yojna_info({
-//  Title: 'Pradhan Mantri Fasal Bima Yojana (PMFBY)',
-//  Description: 'The Pradhan Mantri Fasal Bima Yojana launched on 18 February 2016 by Prime Minister Narendra Modi is an insurance service for farmers for their yields',
-//  Image: 'https://www.royalsundaram.in/html/files/crop-insurance/Crop-Insurance-Online.jpg',
-//  link: 'https://krishijagran.com/agriculture-world/how-to-apply-update-details-check-beneficiary-status-and-new-list-in-pm-kisan-website/'
-// });
-
-// yojna_info1.save();
 
 
 
-app.use(express.static("public"));
+
 
 app.get('/', (req, res) => {
     Blog_info.find((err, blog) => {
@@ -66,11 +86,35 @@ app.get('/schemes', (req, res) => {
     })
 
 })
+app.post('/schemes', isLoggedIn,function (req, res) {
+    var newblog = {
+        Technology: req.body.Technology,
+        Use: req.body.Use,
+        image: req.body.image
+        
+    }
+    Blog_info.create(newblog, function (err, newlyCreated) {
+        if (err)
+            console.log(err)
+        else
+            res.redirect('/')
+
+    })
+
+})
+
+app.get('/schemes/new',isLoggedIn, function (req, res) {
+    res.render('new')
+})
 
 
 
 
-
+function isLoggedIn(req, res, next) {
+    if (req.isAuthenticated())
+        return next()
+    res.redirect('/login')
+}
 
 
 app.listen(3000, () => console.log('server started on port 3000'))

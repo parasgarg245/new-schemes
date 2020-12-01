@@ -1,26 +1,8 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Scheme</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" type="text/css" href="/css/scheme.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<link rel="preconnect" href="https://fonts.gstatic.com">
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap" rel="stylesheet">
-</head>
-<body>
-  <div class="topnav" id="myTopnav">
-    <h1>AGRI Tech</h1>
-    <a href="/schemes" >SCHEMES</a>
-    <a href="/">BLOGS</a>
-    
-    <a href="javascript:void(0);" class="icon" onclick="myFunction()">
-      <i class="fa fa-bars"></i>
-    </a>
-  </div>
+<%- include('./partials/header') %>
 <div class="blog">
 	<header>
   <h1>Blog</h1>
+  <a href="/schemes/new">Post A Blog</a>
   
 </header>
 <div class="band">
@@ -43,16 +25,4 @@
 </div>
 	</div>
 
- <script>
-    function myFunction() {
-    var x = document.getElementById("myTopnav");
-    if (x.className === "topnav") {
-      x.className += " responsive";
-    } else {
-      x.className = "topnav";
-    }
-  }
-  </script> 
-
-</body>
-</html>
+<%- include('./partials/footer') %>
